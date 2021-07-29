@@ -14,7 +14,7 @@ enum FlexSpacing {
 
 type FlexProps = {
     onClick?: () => void,
-    children?: JSX.Element | JSX.Element[],
+    children?: React.ReactNode,
     mode: FlexMode,
     spacing?: FlexSpacing,
     style?: React.CSSProperties

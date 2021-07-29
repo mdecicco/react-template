@@ -5,11 +5,12 @@ import update from 'immutability-helper';
 import { Flex } from 'components';
 import API from 'api';
 import { UUID } from 'utils';
+import { useDispatch } from 'react-redux';
 
 const AlertFadeDuration = 250; // ms
 const AlertSlideDuration = 300; // ms
 const AlertHeight = 70; // px
-const AlertWidth = 180; // px
+const AlertWidth = 380; // px
 const AlertTitleMargin = 5; // px
 const AlertTitleSize = 18; // px
 const AlertTimerHeight = 2; // px
@@ -53,9 +54,10 @@ const AlertBox = styled.div`
     color: #301f00;
     border-radius: 5px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     pointer-events: all;
     cursor: pointer;
+    z-index: 3;
 
     &:hover {
         background-color: #c5ab8c;
@@ -98,9 +100,9 @@ const DurationVariantDiv = styled.div.attrs((props: AlertTimerProps) => ({
 
 const TimerShrink = keyframes`
     from {
-        min-width: ${AlertWidth - 10}px;
-        max-width: ${AlertWidth - 10}px;
-        width: ${AlertWidth - 10}px;
+        min-width: ${AlertWidth - 10 - (AlertHeight + 5)}px;
+        max-width: ${AlertWidth - 10 - (AlertHeight + 5)}px;
+        width: ${AlertWidth - 10 - (AlertHeight + 5)}px;
     }
     to {
         min-width: 0px;
@@ -112,8 +114,8 @@ const TimerShrink = keyframes`
 const AlertTimerBox = DurationVariantDiv`
     pointer-events: none;
     position: absolute;
-    left: 5px;
-    bottom: ${AlertTimerVMargin - AlertTimerHeight}px;
+    left: ${AlertHeight + 5}px;
+    bottom: ${AlertTimerVMargin}px;
     min-height: ${AlertTimerHeight}px;
     max-height: ${AlertTimerHeight}px;
     height: ${AlertTimerHeight}px;
@@ -124,8 +126,24 @@ const AlertTimerBox = DurationVariantDiv`
     animation-timing-function: linear;
 `;
 
+const AlertImg = styled.img`
+    width: ${AlertHeight - 10}px;
+    height: ${AlertHeight - 10}px;
+    margin: 5px;
+    border-radius: 5px;
+`;
+
+const AlertIcon = styled.div`
+    width: ${AlertHeight - 10}px;
+    height: ${AlertHeight - 10}px;
+    margin: 5px;
+    background-color: red;
+    border-radius: 5px;
+`;
+
 const AlertPresenter : React.FC = () => {
     const { alerts } = API.Alerts.use();
+    const dispatch = useDispatch();
 
     const removeAlert = API.Alerts.useRemoveAlert();
     const updateAlert = API.Alerts.useUpdateAlert();
@@ -189,10 +207,20 @@ const AlertPresenter : React.FC = () => {
                         }}
                         onMouseOver={() => alertMouseOver(a.uuid)}
                         onMouseOut={() => alertMouseOut(a.uuid)}
+                        onClick={() => {
+                            // if (a.buttons.length > 0) dispatch(a.buttons[0].action);
+                        }}
                     >
-                        <AlertTitle>{a.title}</AlertTitle>
-                        <AlertMessage>{a.message}</AlertMessage>
-                        {a.timeoutId && !a.fading && (<AlertTimerBox duration={a.duration}/>)}
+                        {a.imgUrl ? (
+                            <AlertImg src={a.imgUrl}/>
+                        ) : (
+                            <AlertIcon/>
+                        )}
+                        <Flex mode={Flex.Mode.Vertical}>
+                            <AlertTitle>{a.title}</AlertTitle>
+                            <AlertMessage>{a.message}</AlertMessage>
+                            {a.timeoutId && !a.fading && (<AlertTimerBox duration={a.duration}/>)}
+                        </Flex>
                     </AlertBox>
                 ))}
             </Flex>

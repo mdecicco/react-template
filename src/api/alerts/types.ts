@@ -1,4 +1,6 @@
 import { UUID } from 'utils';
+import { ButtonProps } from 'components';
+import { Action } from 'redux';
 
 export enum AlertActions {
     Submit = 'alerts/SUBMIT_ALERT',
@@ -12,6 +14,12 @@ export enum AlertType {
     Error
 };
 
+export type AlertButton = {
+    label: string,
+    action: Action,
+    buttonProps?: ButtonProps
+};
+
 export type Alert = {
     uuid: UUID,
     type: AlertType,
@@ -19,6 +27,8 @@ export type Alert = {
     timeoutId: NodeJS.Timeout | null,
     title: string,
     message: string,
+    imgUrl: string | null,
+    buttons: AlertButton[],
     fading: boolean,
     hovered: boolean
 };

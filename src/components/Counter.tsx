@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Button, Flex } from 'components';
 import API from 'api';
 
+import { submitAlert as submitAlertAction } from '../api/alerts/actions';
+
 const Counter : React.FC = () => {
     const [count, setCount] = React.useState(0);
     const submitAlert = API.Alerts.useSubmitAlert();
@@ -17,11 +19,23 @@ const Counter : React.FC = () => {
                 label='Test'
                 onClick={() => {
                     setCount(count + 1);
+                    const action = submitAlertAction({
+                        title: 'test',
+                        message: 'test',
+                        type: API.Alerts.AlertType.Info,
+                        duration: 5.0
+                    });
+
                     submitAlert({
                         title: 'Pressed',
                         message: 'The button was pressed The button was pressed',
+                        imgUrl: 'https://avatars.githubusercontent.com/u/9410375?s=120&v=4',
                         type: API.Alerts.AlertType.Info,
-                        duration: Math.random() * 5
+                        duration: Math.random() * 5,
+                        buttons: [{
+                            label: 'Click',
+                            action
+                        }]
                     });
                 }}
                 confirm

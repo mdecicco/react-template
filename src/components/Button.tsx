@@ -3,7 +3,7 @@ import styled, { css, keyframes } from 'styled-components';
 
 const ButtonConfirmTimeout = 4000; // ms
 
-type ButtonLabelProps = {
+export type ButtonProps = {
     label?: string,
     onClick?: () => void,
     disabled?: boolean,
@@ -227,7 +227,7 @@ const StyledButtonLabel = styled.span`
     z-index: 1;
 `;
 
-const Button : React.FC<ButtonLabelProps> = props => {
+const Button : React.FC<ButtonProps> = props => {
     const [confirmTimeout, setConfirmTimeout] = React.useState<null | NodeJS.Timeout>(null);
 
     const BtnComp = props.danger ? (props.primary ? StyledPrimaryDangerButton : StyledDangerButton) : (props.primary ? StyledPrimaryButton : StyledNormalButton);

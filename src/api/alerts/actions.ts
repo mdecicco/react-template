@@ -3,6 +3,7 @@ import {
     AlertState,
     AlertActions,
     AlertType,
+    AlertButton,
     SubmitAlertAction,
     RemoveAlertAction,
     UpdateAlertAction
@@ -17,6 +18,8 @@ type SubmitAlertParams = {
     message?: string,
     type?: AlertType,
     duration?: number,
+    imgUrl?: string,
+    buttons?: AlertButton[]
 };
 
 export function submitAlert(params: SubmitAlertParams) : SubmitAlertAction {
@@ -29,6 +32,8 @@ export function submitAlert(params: SubmitAlertParams) : SubmitAlertAction {
             timeoutId: null,
             title: params.title,
             message: params.message || '',
+            imgUrl: params.imgUrl || null,
+            buttons: params.buttons || [],
             fading: false,
             hovered: false
         }
