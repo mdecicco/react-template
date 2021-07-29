@@ -2,10 +2,10 @@ import * as React from 'react';
 import styled, { keyframes } from 'styled-components';
 import update from 'immutability-helper';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faTimes, faInfoCircle, faExclamationCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 
 import { Flex } from 'components';
-import API from 'api';
+import API, { AlertType } from 'api';
 import { UUID } from 'utils';
 import { useDispatch } from 'react-redux';
 import Button from './Button';
@@ -142,12 +142,14 @@ const AlertImg = styled.img`
     border-radius: 5px;
 `;
 
-const AlertIcon = styled.div`
+const AlertIconContainer = styled.div`
     width: ${AlertHeight - 10}px;
     height: ${AlertHeight - 10}px;
     margin: 5px;
-    background-color: red;
     border-radius: 5px;
+    font-size: 40px;
+    line-height: 60px;
+    text-align: center;
 `;
 
 const ButtonDrawer = styled.div`
@@ -173,6 +175,29 @@ const CloseButtonWrapper = styled.div`
         color: rgba(28, 18, 0, 0.73);
     }
 `;
+
+type AlertIconProps = {
+    type: AlertType
+};
+
+const AlertIcon = (props: AlertIconProps) => {
+    let icon = faInfoCircle;
+    let color = '#301f00';
+    if (props.type === API.Alerts.AlertType.Warning) {
+        icon = faExclamationCircle;
+        color = '#ffe000';
+    }
+    else if (props.type === API.Alerts.AlertType.Error) {
+        icon = faExclamationTriangle;
+        color = '#c40000';
+    }
+
+    return (
+        <AlertIconContainer style={{ color }}>
+            <FontAwesomeIcon icon={icon}/>
+        </AlertIconContainer>
+    );
+};
 
 const AlertPresenter : React.FC = () => {
     const { alerts } = API.Alerts.use();
@@ -260,7 +285,7 @@ const AlertPresenter : React.FC = () => {
                                 {a.imgUrl ? (
                                     <AlertImg src={a.imgUrl}/>
                                 ) : (
-                                    <AlertIcon/>
+                                    <AlertIcon type={a.type}/>
                                 )}
                                 <Flex mode={Flex.Mode.Vertical}>
                                     <AlertTitle>{a.title}</AlertTitle>
