@@ -5,11 +5,14 @@ import {
     RemoveAlertAction
 } from './types';
 import update from 'immutability-helper';
+import { genUUID } from 'utils';
 
 export function SubmitReducer(state: AlertState, action: SubmitAlertAction) : AlertState {
+    const alert = Object.assign({}, action.alert, { uuid: genUUID() });
+    
     return update(state, {
         alerts: {
-            $push: [action.alert]
+            $push: [alert]
         }
     });
 }

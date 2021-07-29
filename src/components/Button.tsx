@@ -5,12 +5,14 @@ const ButtonConfirmTimeout = 4000; // ms
 
 export type ButtonProps = {
     label?: string,
-    onClick?: () => void,
+    onClick?: React.MouseEventHandler<HTMLDivElement>,
     disabled?: boolean,
     danger?: boolean,
     primary?: boolean,
     confirm?: boolean,
     confirmText?: string
+    buttonStyle?: React.CSSProperties,
+    labelStyle?: React.CSSProperties
 };
 
 type StyledButtonProps = {
@@ -243,10 +245,10 @@ const Button : React.FC<ButtonProps> = props => {
             };
         } else {
             // button clicked before timer finished, accept input
-            onClick = () => {
+            onClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
                 clearTimeout(confirmTimeout);
                 setConfirmTimeout(null);
-                if (props.onClick) props.onClick();
+                if (props.onClick) props.onClick(event);
             };
         }
     }
@@ -257,8 +259,9 @@ const Button : React.FC<ButtonProps> = props => {
         <BtnComp
             onClick={onClick}
             disabled={props.disabled ? true : false}
+            style={props.buttonStyle}
         >
-            <StyledButtonLabel>
+            <StyledButtonLabel style={props.labelStyle}>
                 {confirmTimeout ? (props.confirmText ? props.confirmText : 'Confirm') : (props.label ? props.label : '')}
             </StyledButtonLabel>
             {confirmTimeout && (<ConfirmComp/>)}

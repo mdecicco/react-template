@@ -28,6 +28,7 @@ export type Alert = {
     title: string,
     message: string,
     imgUrl: string | null,
+    onClickAction: Action | null,
     buttons: AlertButton[],
     fading: boolean,
     hovered: boolean

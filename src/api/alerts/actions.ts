@@ -8,10 +8,11 @@ import {
     RemoveAlertAction,
     UpdateAlertAction
 } from "./types";
-
 import { StateType } from 'api';
-import { genUUID, UUID } from 'utils';
+import { UUID } from 'utils';
+
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+import { Action } from 'redux';
 
 type SubmitAlertParams = {
     title: string,
@@ -19,6 +20,7 @@ type SubmitAlertParams = {
     type?: AlertType,
     duration?: number,
     imgUrl?: string,
+    onClickAction?: Action,
     buttons?: AlertButton[]
 };
 
@@ -26,13 +28,14 @@ export function submitAlert(params: SubmitAlertParams) : SubmitAlertAction {
     return {
         type: AlertActions.Submit,
         alert: {
-            uuid: genUUID(),
+            uuid: '', // UUID must be assigned when the action is processed
             type: params.type || AlertType.Info,
             duration: params.duration !== undefined ? params.duration : 5.0,
             timeoutId: null,
             title: params.title,
             message: params.message || '',
             imgUrl: params.imgUrl || null,
+            onClickAction: params.onClickAction || null,
             buttons: params.buttons || [],
             fading: false,
             hovered: false

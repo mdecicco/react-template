@@ -1,11 +1,14 @@
 import * as React from 'react';
 import styled, { keyframes } from 'styled-components';
 import update from 'immutability-helper';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
 import { Flex } from 'components';
 import API from 'api';
 import { UUID } from 'utils';
 import { useDispatch } from 'react-redux';
+import Button from './Button';
 
 const AlertFadeDuration = 250; // ms
 const AlertSlideDuration = 300; // ms
@@ -15,6 +18,8 @@ const AlertTitleMargin = 5; // px
 const AlertTitleSize = 18; // px
 const AlertTimerHeight = 2; // px
 const AlertTimerVMargin = 5; // px
+const ButtonRowHeight = 29; // px
+const ButtonRowMargin = 5; // px
 
 const Container = styled.div`
     position: absolute;
@@ -39,13 +44,16 @@ const AlertFadeIn = keyframes`
 const AlertBox = styled.div`
     position: absolute;
     left: 10px;
-    min-height: ${AlertHeight}px;
-    max-height: ${AlertHeight}px;
-    height: ${AlertHeight}px;
     min-width: ${AlertWidth}px;
     max-width: ${AlertWidth}px;
     width: ${AlertWidth}px;
-    transition: top ${AlertSlideDuration}ms ease-in-out, opacity ${AlertFadeDuration}ms ease-in-out, background-color 125ms, box-shadow 125ms;
+    transition: top ${AlertSlideDuration}ms ease-in-out,
+                height ${AlertSlideDuration}ms ease-in-out,
+                min-height ${AlertSlideDuration}ms ease-in-out,
+                max-height ${AlertSlideDuration}ms ease-in-out,
+                opacity ${AlertFadeDuration}ms ease-in-out,
+                background-color 125ms,
+                box-shadow 125ms;
     animation-name: ${AlertFadeIn};
     animation-duration: ${AlertFadeDuration}ms;
     animation-iteration-count: 1;
@@ -54,9 +62,10 @@ const AlertBox = styled.div`
     color: #301f00;
     border-radius: 5px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     pointer-events: all;
     cursor: pointer;
+    overflow-y: hidden;
     z-index: 3;
 
     &:hover {
@@ -82,7 +91,10 @@ const AlertTitle = styled.span`
 const AlertMessage = styled.div`
     pointer-events: none;
     font-size: 15px;
-    margin: 0px 5px 0px 5px;
+    margin: 0px 5px 5px 5px;
+    max-width: ${AlertWidth - (AlertHeight + 10)}px;
+    min-width: ${AlertWidth - (AlertHeight + 10)}px;
+    width: ${AlertWidth - (AlertHeight + 10)}px;
     text-overflow: ellipsis;
     overflow: hidden;
     min-height: ${AlertHeight - (AlertTitleSize + (2 * AlertTitleMargin) + AlertTimerHeight + (2 * AlertTimerVMargin))}px;
@@ -100,9 +112,9 @@ const DurationVariantDiv = styled.div.attrs((props: AlertTimerProps) => ({
 
 const TimerShrink = keyframes`
     from {
-        min-width: ${AlertWidth - 10 - (AlertHeight + 5)}px;
-        max-width: ${AlertWidth - 10 - (AlertHeight + 5)}px;
-        width: ${AlertWidth - 10 - (AlertHeight + 5)}px;
+        min-width: ${AlertWidth - (AlertHeight + 5)}px;
+        max-width: ${AlertWidth - (AlertHeight + 5)}px;
+        width: ${AlertWidth - (AlertHeight + 5)}px;
     }
     to {
         min-width: 0px;
@@ -113,9 +125,6 @@ const TimerShrink = keyframes`
 
 const AlertTimerBox = DurationVariantDiv`
     pointer-events: none;
-    position: absolute;
-    left: ${AlertHeight + 5}px;
-    bottom: ${AlertTimerVMargin}px;
     min-height: ${AlertTimerHeight}px;
     max-height: ${AlertTimerHeight}px;
     height: ${AlertTimerHeight}px;
@@ -139,6 +148,30 @@ const AlertIcon = styled.div`
     margin: 5px;
     background-color: red;
     border-radius: 5px;
+`;
+
+const ButtonDrawer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-right: 5px;
+`;
+
+const CloseButtonWrapper = styled.div`
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    padding: 2px 5px 0px 0px;
+    color: rgba(100, 64, 0, 0.73);
+    font-size: 16px;
+    width: 24px;
+    height: 24px;
+    text-align: right;
+    transition: color 125ms;
+
+    &:hover {
+        color: rgba(28, 18, 0, 0.73);
+    }
 `;
 
 const AlertPresenter : React.FC = () => {
@@ -165,8 +198,8 @@ const AlertPresenter : React.FC = () => {
     
     const alertMouseOver = React.useCallback((uuid: UUID) => {
         const a = alerts.find(c => c.uuid === uuid);
-        if (!a || !a.timeoutId || a.fading) return;
-        clearTimeout(a.timeoutId);
+        if (!a || a.fading) return;
+        if (a.timeoutId) clearTimeout(a.timeoutId);
         updateAlert(update(a, {
             timeoutId: { $set: null },
             hovered: { $set: true }
@@ -175,9 +208,9 @@ const AlertPresenter : React.FC = () => {
 
     const alertMouseOut = React.useCallback((uuid: UUID) => {
         const a = alerts.find(c => c.uuid === uuid);
-        if (!a || !a.hovered) return;
+        if (!a || !a.hovered || a.fading) return;
 
-        const timeoutId = setTimeout(() => { animateRemoveAlert(a.uuid); }, a.duration * 1000);
+        const timeoutId = a.duration > 0.0 ? setTimeout(() => { animateRemoveAlert(a.uuid); }, a.duration * 1000) : null;
         updateAlert(update(a, {
             timeoutId: { $set: timeoutId },
             hovered: { $set: false }
@@ -195,34 +228,74 @@ const AlertPresenter : React.FC = () => {
         });
     }, [alerts, updateAlert, animateRemoveAlert]);
 
+    let verticalOffset = 10; // px
     return (
         <Container>
             <Flex mode={Flex.Mode.Vertical}>
-                {alerts.map((a, idx) => (
-                    <AlertBox
-                        key={a.uuid}
-                        style={{
-                            top: `${10 + (idx * (AlertHeight + 10))}px`,
-                            opacity: a.fading ? 0 : 1
-                        }}
-                        onMouseOver={() => alertMouseOver(a.uuid)}
-                        onMouseOut={() => alertMouseOut(a.uuid)}
-                        onClick={() => {
-                            // if (a.buttons.length > 0) dispatch(a.buttons[0].action);
-                        }}
-                    >
-                        {a.imgUrl ? (
-                            <AlertImg src={a.imgUrl}/>
-                        ) : (
-                            <AlertIcon/>
-                        )}
-                        <Flex mode={Flex.Mode.Vertical}>
-                            <AlertTitle>{a.title}</AlertTitle>
-                            <AlertMessage>{a.message}</AlertMessage>
-                            {a.timeoutId && !a.fading && (<AlertTimerBox duration={a.duration}/>)}
-                        </Flex>
-                    </AlertBox>
-                ))}
+                {alerts.map(a => {
+                    const cVOff = verticalOffset;
+                    verticalOffset += AlertHeight + 10;
+                    let height = AlertHeight;
+                    if (a.buttons.length > 0 && a.hovered) {
+                        verticalOffset += ButtonRowHeight + ButtonRowMargin;
+                        height += ButtonRowHeight + ButtonRowMargin;
+                    }
+                    return (
+                        <AlertBox
+                            key={a.uuid}
+                            style={{
+                                top: `${cVOff}px`,
+                                opacity: a.fading ? 0 : 1,
+                                minHeight: `${height}px`,
+                                maxHeight: `${height}px`,
+                                height: `${height}px`,
+                            }}
+                            onMouseEnter={() => alertMouseOver(a.uuid)}
+                            onMouseLeave={() => alertMouseOut(a.uuid)}
+                            onClick={() => {
+                                if (a.onClickAction) dispatch(a.onClickAction);
+                            }}
+                        >
+                            <Flex mode={Flex.Mode.Horizontal}>
+                                {a.imgUrl ? (
+                                    <AlertImg src={a.imgUrl}/>
+                                ) : (
+                                    <AlertIcon/>
+                                )}
+                                <Flex mode={Flex.Mode.Vertical}>
+                                    <AlertTitle>{a.title}</AlertTitle>
+                                    <AlertMessage>{a.message}</AlertMessage>
+                                    {a.timeoutId && !a.fading && (<AlertTimerBox duration={a.duration}/>)}
+                                </Flex>
+                             </Flex>
+                             <ButtonDrawer>
+                                {a.buttons.map((b, idx) => (
+                                    <Button
+                                        key={idx}
+                                        label={b.label}
+                                        buttonStyle={{ borderColor: 'rgba(100, 64, 0, 0.73)' }}
+                                        labelStyle={{ color: 'rgba(100, 64, 0, 0.73)' }}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            dispatch(b.action);
+                                        }}
+                                        {...b.buttonProps}
+                                    />
+                                ))}
+                             </ButtonDrawer>
+                             {a.hovered && (
+                                 <CloseButtonWrapper
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        animateRemoveAlert(a.uuid);
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faTimes}/>
+                                 </CloseButtonWrapper>
+                             )}
+                        </AlertBox>
+                    );
+                })}
             </Flex>
         </Container>
     );

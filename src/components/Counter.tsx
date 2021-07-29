@@ -19,11 +19,18 @@ const Counter : React.FC = () => {
                 label='Test'
                 onClick={() => {
                     setCount(count + 1);
-                    const action = submitAlertAction({
-                        title: 'test',
-                        message: 'test',
+                    const outerAction = submitAlertAction({
+                        title: 'Stop That',
+                        message: 'An alert box was clicked',
                         type: API.Alerts.AlertType.Info,
                         duration: 5.0
+                    });
+
+                    const buttonAction = submitAlertAction({
+                        title: 'Ha ha',
+                        message: 'You were tricked into creating an alert with no timeout',
+                        type: API.Alerts.AlertType.Info,
+                        duration: 0.0
                     });
 
                     submitAlert({
@@ -32,9 +39,10 @@ const Counter : React.FC = () => {
                         imgUrl: 'https://avatars.githubusercontent.com/u/9410375?s=120&v=4',
                         type: API.Alerts.AlertType.Info,
                         duration: Math.random() * 5,
+                        onClickAction: outerAction,
                         buttons: [{
-                            label: 'Click',
-                            action
+                            label: 'Dismiss',
+                            action: buttonAction
                         }]
                     });
                 }}
