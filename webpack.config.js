@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: './src/index.tsx',
@@ -10,17 +11,18 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
-                exclude: /node_modules/,
+                exclude: [/node_modules/, /tests/],
             },
         ],
     },
     resolve: {
         extensions: [ '.tsx', '.ts', '.js' ],
         alias: {
-            components: path.resolve(__dirname, 'src/components/'),
-            pages: path.resolve(__dirname, 'src/pages/'),
-            api: path.resolve(__dirname, 'src/api'),
-            utils: path.resolve(__dirname, 'src/utils')
+            '@components': path.resolve(__dirname, 'src/components/'),
+            '@pages': path.resolve(__dirname, 'src/pages/'),
+            '@api': path.resolve(__dirname, 'src/api/'),
+            '@utils': path.resolve(__dirname, 'src/utils/'),
+            '@constants': path.resolve(__dirname, 'src/constants')
         }
     },
     output: {

@@ -229,6 +229,15 @@ const StyledButtonLabel = styled.span`
     z-index: 1;
 `;
 
+/**
+ * A button component with some special features
+ * @param danger (boolean) Styles the button to indicate a potentially destructive action. (optional)
+ * @param primary (boolean) Styles the button to indicate a primary action. (optional)
+ * @param confirm (boolean) Prevents the button from being accidentally clicked by showing a timer after the first click. The button must be clicked again before the timer runs out to fire the action. (optional)
+ * @param confirmText (string) The text that the button label changes to when the confirmation timer is active. Defaults to 'Confirm'. (optional)
+ * @param buttonStyle (React.CSSProperties) Custom styling attributes to be applied to the button (optional)
+ * @param labelStyle (React.CSSProperties) Custom styling attributes to be applied to the button label (optional)
+ */
 const Button : React.FC<ButtonProps> = props => {
     const [confirmTimeout, setConfirmTimeout] = React.useState<null | NodeJS.Timeout>(null);
 

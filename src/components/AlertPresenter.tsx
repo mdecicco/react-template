@@ -4,9 +4,9 @@ import update from 'immutability-helper';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes, faInfoCircle, faExclamationCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 
-import { Flex } from 'components';
-import API, { AlertType } from 'api';
-import { UUID } from 'utils';
+import { Flex } from '@components';
+import API, { AlertType } from '@api';
+import { UUID } from '@utils';
 import { useDispatch } from 'react-redux';
 import Button from './Button';
 
@@ -30,6 +30,7 @@ const Container = styled.div`
     max-width: ${AlertWidth + 20}px;
     width: ${AlertWidth + 20}px;
     height: 100vh;
+    overflow-y: hidden;
 `;
 
 const AlertFadeIn = keyframes`

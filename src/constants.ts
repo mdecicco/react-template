@@ -1,0 +1,1 @@
+export const DefaultAlertDuration = 5.0; // seconds

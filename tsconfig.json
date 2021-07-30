@@ -17,11 +17,12 @@
         "target": "es5",
         "jsx": "react",
         "paths": {
-            "components": ["./src/components"],
-            "pages": ["./src/pages"],
-            "api": ["./src/api"],
-            "utils": ["./src/utils"]
+            "@components": ["./src/components"],
+            "@pages": ["./src/pages"],
+            "@api": ["./src/api"],
+            "@utils": ["./src/utils"],
+            "@constants": ["./src/constants"]
         }
     },
-    "include": ["src"]
+    "include": ["src", "tests"]
 }

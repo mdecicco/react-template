@@ -1,8 +1,6 @@
 import * as React from 'react';
-import { Button, Flex } from 'components';
-import API from 'api';
-
-import { submitAlert as submitAlertAction } from '../api/alerts/actions';
+import { Button, Flex } from '@components';
+import API from '@api';
 
 const Counter : React.FC = () => {
     const [count, setCount] = React.useState(0);
@@ -19,14 +17,14 @@ const Counter : React.FC = () => {
                 label='Test'
                 onClick={() => {
                     setCount(count + 1);
-                    const outerAction = submitAlertAction({
+                    const outerAction = API.Alerts.submitAlert({
                         title: 'Stop That',
                         message: 'An alert box was clicked',
                         type: API.Alerts.AlertType.Warning,
                         duration: 5.0
                     });
 
-                    const buttonAction = submitAlertAction({
+                    const buttonAction = API.Alerts.submitAlert({
                         title: 'Ha ha',
                         message: 'You were tricked into creating an alert with no timeout',
                         type: API.Alerts.AlertType.Error,

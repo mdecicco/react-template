@@ -1,15 +1,18 @@
 import { AlertActions, AlertState, AlertActionType } from './types';
 import { SubmitReducer, UpdateReducer, RemoveReducer } from './reducers';
-export { AlertType } from './types';
+
+export { AlertType, AlertActions } from './types';
+export { SubmitReducer, UpdateReducer, RemoveReducer } from './reducers';
 export {
     useAlerts as use,
     useSubmitAlert,
     useUpdateAlert,
-    useRemoveAlert
+    useRemoveAlert,
+    submitAlert,
+    updateAlert,
+    removeAlert
 } from './actions';
-
 export type {
-    AlertActions,
     Alert,
     AlertState,
     SubmitAlertAction,

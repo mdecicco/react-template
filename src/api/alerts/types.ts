@@ -1,5 +1,5 @@
-import { UUID } from 'utils';
-import { ButtonProps } from 'components';
+import { UUID } from '@utils';
+import { ButtonProps } from '@components';
 import { Action } from 'redux';
 
 export enum AlertActions {
@@ -9,11 +9,19 @@ export enum AlertActions {
 };
 
 export enum AlertType {
-    Info,
-    Warning,
-    Error
+    Info = 0,
+    Warning = 1,
+    Error = 2
 };
 
+/**
+ * - label
+ *    - Text displayed on the button.
+ * - action
+ *    - Action to dispatch when a user clicks on the button. Can be any redux action.
+ * - buttonProps
+ *    - Properties which will be passed to the <Button> component
+ */
 export type AlertButton = {
     label: string,
     action: Action,
