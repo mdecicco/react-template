@@ -4,8 +4,9 @@ import update from 'immutability-helper';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes, faInfoCircle, faExclamationCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 
-import { Flex } from '@components';
-import API, { AlertType } from '@api';
+import Flex from './Flex';
+import ContextMenu from './ContextMenu';
+import API, { Alert, AlertType } from '@api';
 import { UUID } from '@utils';
 import { useDispatch } from 'react-redux';
 import Button from './Button';
@@ -242,6 +243,16 @@ const AlertPresenter : React.FC = () => {
             hovered: { $set: false }
         }));
     }, [alerts, updateAlert, animateRemoveAlert]);
+    
+    const pinAlert = React.useCallback((alerts: Alert[], uuid: UUID) => {
+        const a = alerts.find(c => c.uuid === uuid);
+        if (!a || a.fading) return;
+        if (a.timeoutId) clearTimeout(a.timeoutId);
+        updateAlert(update(a, {
+            timeoutId: { $set: null },
+            duration: { $set: 0 }
+        }));
+    }, [updateAlert]);
 
     React.useEffect(() => {
         alerts.forEach(a => {
@@ -266,60 +277,68 @@ const AlertPresenter : React.FC = () => {
                         verticalOffset += ButtonRowHeight + ButtonRowMargin;
                         height += ButtonRowHeight + ButtonRowMargin;
                     }
+                    const options = [];
+                    if (a.duration !== 0) options.push({ label: 'Pin', onClick: () => { pinAlert(alerts, a.uuid); } });
+                    options.push({ label: 'Dismiss', onClick: () => { animateRemoveAlert(a.uuid); } });
                     return (
-                        <AlertBox
+                        <ContextMenu 
+                            menuId={`ctx_${a.uuid}`}
                             key={a.uuid}
-                            style={{
-                                top: `${cVOff}px`,
-                                opacity: a.fading ? 0 : 1,
-                                minHeight: `${height}px`,
-                                maxHeight: `${height}px`,
-                                height: `${height}px`,
-                            }}
-                            onMouseEnter={() => alertMouseOver(a.uuid)}
-                            onMouseLeave={() => alertMouseOut(a.uuid)}
-                            onClick={() => {
-                                if (a.onClickAction) dispatch(a.onClickAction);
-                            }}
+                            items={options}
                         >
-                            <Flex mode={Flex.Mode.Horizontal}>
-                                {a.imgUrl ? (
-                                    <AlertImg src={a.imgUrl}/>
-                                ) : (
-                                    <AlertIcon type={a.type}/>
-                                )}
-                                <Flex mode={Flex.Mode.Vertical}>
-                                    <AlertTitle>{a.title}</AlertTitle>
-                                    <AlertMessage>{a.message}</AlertMessage>
-                                    {a.timeoutId && !a.fading && (<AlertTimerBox duration={a.duration}/>)}
+                            <AlertBox
+                                style={{
+                                    top: `${cVOff}px`,
+                                    opacity: a.fading ? 0 : 1,
+                                    minHeight: `${height}px`,
+                                    maxHeight: `${height}px`,
+                                    height: `${height}px`,
+                                }}
+                                onMouseEnter={() => alertMouseOver(a.uuid)}
+                                onMouseLeave={() => alertMouseOut(a.uuid)}
+                                onClick={() => {
+                                    if (a.onClickAction) dispatch(a.onClickAction);
+                                }}
+                            >
+                                <Flex mode={Flex.Mode.Horizontal}>
+                                    {a.imgUrl ? (
+                                        <AlertImg src={a.imgUrl}/>
+                                    ) : (
+                                        <AlertIcon type={a.type}/>
+                                    )}
+                                    <Flex mode={Flex.Mode.Vertical}>
+                                        <AlertTitle>{a.title}</AlertTitle>
+                                        <AlertMessage>{a.message}</AlertMessage>
+                                        {a.timeoutId && !a.fading && (<AlertTimerBox duration={a.duration}/>)}
+                                    </Flex>
                                 </Flex>
-                             </Flex>
-                             <ButtonDrawer>
-                                {a.buttons.map((b, idx) => (
-                                    <Button
-                                        key={idx}
-                                        label={b.label}
-                                        buttonStyle={{ borderColor: 'rgba(100, 64, 0, 0.73)' }}
-                                        labelStyle={{ color: 'rgba(100, 64, 0, 0.73)' }}
-                                        onClick={e => {
+                                <ButtonDrawer>
+                                    {a.buttons.map((b, idx) => (
+                                        <Button
+                                            key={idx}
+                                            label={b.label}
+                                            buttonStyle={{ borderColor: 'rgba(100, 64, 0, 0.73)' }}
+                                            labelStyle={{ color: 'rgba(100, 64, 0, 0.73)' }}
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                dispatch(b.action);
+                                            }}
+                                            {...b.buttonProps}
+                                        />
+                                    ))}
+                                </ButtonDrawer>
+                                {a.hovered && (
+                                    <CloseButtonWrapper
+                                        onClick={(e) => {
                                             e.stopPropagation();
-                                            dispatch(b.action);
+                                            animateRemoveAlert(a.uuid);
                                         }}
-                                        {...b.buttonProps}
-                                    />
-                                ))}
-                             </ButtonDrawer>
-                             {a.hovered && (
-                                 <CloseButtonWrapper
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        animateRemoveAlert(a.uuid);
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faTimes}/>
-                                 </CloseButtonWrapper>
-                             )}
-                        </AlertBox>
+                                    >
+                                        <FontAwesomeIcon icon={faTimes}/>
+                                    </CloseButtonWrapper>
+                                )}
+                            </AlertBox>
+                        </ContextMenu>
                     );
                 })}
             </Flex>

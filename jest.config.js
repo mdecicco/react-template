@@ -11,6 +11,7 @@ const config = {
         '^@pages$': '<rootDir>/src/pages',
         '^@api$': '<rootDir>/src/api',
         '^@utils$': '<rootDir>/src/utils',
+        '^@hooks$': '<rootDir>/src/hooks',
         '^@constants$': '<rootDir>/src/constants'
     }
 };

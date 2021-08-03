@@ -22,6 +22,7 @@ module.exports = {
             '@pages': path.resolve(__dirname, 'src/pages/'),
             '@api': path.resolve(__dirname, 'src/api/'),
             '@utils': path.resolve(__dirname, 'src/utils/'),
+            '@hooks': path.resolve(__dirname, 'src/hooks/'),
             '@constants': path.resolve(__dirname, 'src/constants')
         }
     },
