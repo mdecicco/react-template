@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button, Flex, ContextMenu } from '@components';
-import API from '@api';
+import { Request } from '@utils';
+import API, { AlertType } from '@api';
 
 const Counter : React.FC = () => {
     const [count, setCount] = React.useState(0);
@@ -26,6 +27,36 @@ const Counter : React.FC = () => {
         label: 'Some Not Applicable Action',
         disabled: true,
         onClick: () => { setCount(10000); }
+    },{
+        label: 'Request Pokemon',
+        onClick: async () => {
+            const result = await Request.get(`https://pokeapi.co/api/v2/pokemon/${Math.floor(Math.random() * 898) + 1}`);
+            console.log(result);
+            if (result.succeeded) {
+                const mon = result.result;
+                const sprites: string[] = [];
+                Object.keys(mon.sprites).forEach(key => {
+                    sprites.push(mon.sprites[key]);
+                });
+                submitAlert({
+                    title: `Got ${mon.name}`,
+                    message: mon.moves.length === 0 ? 'No moves...' : `Moves: ${mon.moves.filter(
+                        (m: unknown, idx: number) => idx < 5
+                    ).map(
+                        (a: { move: { name: string } }) => a.move.name
+                    ).join(', ')} ${mon.moves.length > 5 ? `and ${mon.moves.length - 5} more...` : ''}`,
+                    imgUrl: sprites.length > 0 ? sprites[Math.floor(Math.random() * sprites.length)] : undefined,
+                    duration: 15
+                });
+            } else {
+                submitAlert({
+                    title: 'Oops',
+                    message: 'There was an error',
+                    type: API.Alerts.AlertType.Error,
+                    duration: 5
+                });
+            }
+        }
     }];
 
     return (

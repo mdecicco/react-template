@@ -17,7 +17,7 @@ describe('Test submitAlert', () => {
     });
 
     it('Uses Constants.DefaultAlertDuration for default duration', () => {
-        expect(defaults.alert.duration).toEqual(Constants.DefaultAlertDuration);
+        expect(defaults.alert.duration).toEqual(Constants.DEFAULT_ALERT_DURATION);
     });
 
     it('Uses AlertType.Info for default type', () => {

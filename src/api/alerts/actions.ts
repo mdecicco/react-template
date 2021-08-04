@@ -50,7 +50,7 @@ export function submitAlert(params: SubmitAlertParams) : SubmitAlertAction {
         alert: {
             uuid: '', // UUID must be assigned when the action is processed
             type: params.type || AlertType.Info,
-            duration: params.duration !== undefined ? params.duration : Constants.DefaultAlertDuration,
+            duration: params.duration !== undefined ? params.duration : Constants.DEFAULT_ALERT_DURATION,
             timeoutId: null,
             title: params.title,
             message: params.message || '',

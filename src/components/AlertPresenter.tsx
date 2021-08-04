@@ -92,7 +92,8 @@ const AlertTitle = styled.span`
 
 const AlertMessage = styled.div`
     pointer-events: none;
-    font-size: 15px;
+    font-size: 12px;
+    font-family: sans-serif;
     margin: 0px 5px 5px 5px;
     max-width: ${AlertWidth - (AlertHeight + 10)}px;
     min-width: ${AlertWidth - (AlertHeight + 10)}px;
@@ -281,7 +282,7 @@ const AlertPresenter : React.FC = () => {
                     if (a.duration !== 0) options.push({ label: 'Pin', onClick: () => { pinAlert(alerts, a.uuid); } });
                     options.push({ label: 'Dismiss', onClick: () => { animateRemoveAlert(a.uuid); } });
                     return (
-                        <ContextMenu 
+                        <ContextMenu
                             menuId={`ctx_${a.uuid}`}
                             key={a.uuid}
                             items={options}
