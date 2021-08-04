@@ -85,10 +85,6 @@ function usePortal(id: string) {
     return getRootElem();
 }
 
-interface DOMEvent<T extends EventTarget> extends Event {
-    readonly target: T
-}
-
 const Portal: React.FC<PortalProps> = (props: PortalProps) => {
     const target = usePortal(props.id);
     const ref = React.useRef<HTMLDivElement>(null);

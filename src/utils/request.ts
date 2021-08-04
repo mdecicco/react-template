@@ -71,7 +71,7 @@ export class RequestResult {
 
 function fetchWrapper(url: string, options: RequestInit, initiatedBy: RequestResult | null = null) : Promise<RequestResult> {
     return new Promise<RequestResult>(async (resolve) => {
-        if (Constants.LOG_OUTGOING_REQUESTS) console.log(url, options);
+        if (Constants.LogOutgoingRequests) console.log(url, options);
         let status = RequestStatus.SUCCESS;
         let type: string | null = null;
         let scode: number | null = null;
@@ -84,7 +84,7 @@ function fetchWrapper(url: string, options: RequestInit, initiatedBy: RequestRes
                 if (resolved) return;
                 didTimeout = true;
                 resolve(new RequestResult(url, options, RequestStatus.TIMEOUT, null, initiatedBy ? initiatedBy.attempts : 1, null, null));
-            }, Constants.REQUEST_TIMEOUT * 1000);
+            }, Constants.RequestTimeout * 1000);
             
             const result = await fetch(url, options).then(r => {
                 if (didTimeout) return null;
@@ -115,7 +115,7 @@ function fetchWrapper(url: string, options: RequestInit, initiatedBy: RequestRes
                 if (type && type.includes('application/json')) {
                     try {
                         const data = await r.json();
-                        if (Constants.LOG_OUTGOING_REQUESTS) console.log(`Got ${url} results:`, data);
+                        if (Constants.LogOutgoingRequests) console.log(`Got ${url} results:`, data);
                         return data;
                     } catch (err) {
                         if (status === RequestStatus.SUCCESS) status = RequestStatus.BAD_RESPONSE;
@@ -123,13 +123,13 @@ function fetchWrapper(url: string, options: RequestInit, initiatedBy: RequestRes
                 } else if (type && (type.includes('text/') || type.includes('application/xml'))) {
                     try {
                         const data = await r.text();
-                        if (Constants.LOG_OUTGOING_REQUESTS) console.log(`Got ${url} results:`, data);
+                        if (Constants.LogOutgoingRequests) console.log(`Got ${url} results:`, data);
                         return data;
                     } catch (err) {
                         if (status === RequestStatus.SUCCESS) status = RequestStatus.BAD_RESPONSE;
                     }
                 } else {
-                    if (Constants.LOG_OUTGOING_REQUESTS) console.log(`Got ${url} results:`, r);
+                    if (Constants.LogOutgoingRequests) console.log(`Got ${url} results:`, r);
                 }
     
                 return r;

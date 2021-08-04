@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, Flex, ContextMenu } from '@components';
 import { Request } from '@utils';
-import API, { AlertType } from '@api';
+import API from '@api';
 
 const Counter : React.FC = () => {
     const [count, setCount] = React.useState(0);
